@@ -1,0 +1,82 @@
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
+import { api, Agent } from '../../../lib/api';
+import { Ionicons } from '@expo/vector-icons';
+import { C, R, FONT } from '../../../lib/design';
+
+function AgentRow({ item, onPress }: { item: Agent; onPress: () => void }) {
+  const date = new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return (
+    <TouchableOpacity style={styles.row} onPress={onPress}>
+      <View style={styles.iconWrap}>
+        <Ionicons name="hardware-chip-outline" size={18} color={C.secondary} />
+      </View>
+      <View style={styles.info}>
+        <Text style={styles.name}>{item.agent_name}</Text>
+        {item.description ? <Text style={styles.desc} numberOfLines={1}>{item.description}</Text> : null}
+        <Text style={styles.date}>Created {date}</Text>
+      </View>
+      {item.deprecated_at && (
+        <View style={styles.deprecatedBadge}>
+          <Text style={styles.deprecatedText}>Deprecated</Text>
+        </View>
+      )}
+      <Ionicons name="chevron-forward" size={14} color={C.outlineVariant} />
+    </TouchableOpacity>
+  );
+}
+
+export default function AgentsScreen() {
+  const router = useRouter();
+  const { data, isLoading } = useQuery({
+    queryKey: ['agents'],
+    queryFn: api.listAgents,
+  });
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.pageTitle}>Agents</Text>
+        <Text style={styles.count}>{data?.length ?? 0} agents</Text>
+      </View>
+
+      {isLoading ? (
+        <ActivityIndicator color={C.secondary} style={{ marginTop: 40 }} />
+      ) : (
+        <FlatList
+          data={data}
+          keyExtractor={(i) => i.id}
+          renderItem={({ item }) => (
+            <AgentRow item={item} onPress={() => router.push(`/(dashboard)/agents/${item.agent_name}` as any)} />
+          )}
+          ItemSeparatorComponent={() => <View style={styles.sep} />}
+          contentContainerStyle={styles.list}
+          ListEmptyComponent={<Text style={styles.empty}>No agents yet</Text>}
+        />
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: C.surface, padding: 32 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
+  pageTitle: { color: C.onSurface, fontSize: 26, fontWeight: '600', fontFamily: FONT },
+  count: { color: C.primary, fontSize: 13, fontFamily: FONT },
+  list: { gap: 0 },
+  row: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: C.surfaceLowest, padding: 16, borderRadius: R.xl,
+    boxShadow: '0 1px 8px rgba(45,52,53,0.04)',
+  },
+  iconWrap: { width: 40, height: 40, borderRadius: R.lg, backgroundColor: C.secondaryContainer, justifyContent: 'center', alignItems: 'center' },
+  info: { flex: 1, gap: 2 },
+  name: { color: C.onSurface, fontSize: 15, fontWeight: '600', fontFamily: FONT },
+  desc: { color: C.primary, fontSize: 13, fontFamily: FONT },
+  date: { color: C.primary, fontSize: 11, opacity: 0.6, fontFamily: FONT },
+  deprecatedBadge: { backgroundColor: C.secondaryContainer, borderRadius: R.md, paddingHorizontal: 8, paddingVertical: 3 },
+  deprecatedText: { color: C.secondary, fontSize: 11, fontFamily: FONT },
+  sep: { height: 8 },
+  empty: { color: C.primary, textAlign: 'center', marginTop: 60, fontSize: 14, fontFamily: FONT },
+});

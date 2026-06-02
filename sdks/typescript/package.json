@@ -1,0 +1,57 @@
+{
+  "name": "dunno",
+  "version": "0.1.0",
+  "description": "Dunno — LLM Analytics for AI Agents — TypeScript SDK",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./ai/provider-openai": {
+      "import": "./dist/ai/provider-openai.mjs",
+      "require": "./dist/ai/provider-openai.js",
+      "types": "./dist/ai/provider-openai.d.ts"
+    },
+    "./ai/provider-anthropic": {
+      "import": "./dist/ai/provider-anthropic.mjs",
+      "require": "./dist/ai/provider-anthropic.js",
+      "types": "./dist/ai/provider-anthropic.d.ts"
+    },
+    "./ai/provider-gemini": {
+      "import": "./dist/ai/provider-gemini.mjs",
+      "require": "./dist/ai/provider-gemini.js",
+      "types": "./dist/ai/provider-gemini.d.ts"
+    },
+    "./ai/ai-sdk": {
+      "import": "./dist/ai/ai-sdk.mjs",
+      "require": "./dist/ai/ai-sdk.js",
+      "types": "./dist/ai/ai-sdk.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  },
+  "peerDependencies": {
+    "openai": ">=4.0.0",
+    "@anthropic-ai/sdk": ">=0.24.0",
+    "@google/generative-ai": ">=0.7.0",
+    "ai": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "openai": { "optional": true },
+    "@anthropic-ai/sdk": { "optional": true },
+    "@google/generative-ai": { "optional": true },
+    "ai": { "optional": true }
+  }
+}
